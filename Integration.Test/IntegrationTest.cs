@@ -6,32 +6,29 @@ namespace Integration.Test;
 
 public class IntegrationTest
 {
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly CsrfHelper _csrfHelper;
-
-    public IntegrationTest()
-    {
-        _csrfHelper = new CsrfHelper();
-
-        _factory = new WebApplicationFactory<Program>()
+    private readonly WebApplicationFactory<Program> _factory =
+        new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
-                builder.WithCsrf(_csrfHelper));
-    }
+                builder.WithoutCsrf());
+
 
     [Fact]
-    public async Task Test1()
+    public async Task ShouldPostWithSuccessWithoutCsrfToken()
     {
-        var c = _factory.CreateCsrfClient(_csrfHelper.GetCsrfCookie());
+        // Arrange
+        var client = _factory.CreateClient();
 
         var formFields = new List<KeyValuePair<string, string>>
         {
-            new("Foo", "Bar"),
-            _csrfHelper.GetCsrfFormValue()
+            new("Foo", "Bar")
         };
 
         var content = new FormUrlEncodedContent(formFields);
-        var result = await c.PostAsync("/Index", content);
 
+        // Act
+        var result = await client.PostAsync("/Index", content);
+
+        // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 }

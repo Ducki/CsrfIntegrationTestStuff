@@ -1,21 +1,7 @@
-using System.Net;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 
 namespace Integration.Test;
-
-public class CsrfHelper
-{
-    public IAntiforgery InnerAntiforgery { get; } = new MyIAntiforgery();
-    private readonly AntiforgeryTokenSet _tokenSet;
-
-    public CsrfHelper() =>
-        _tokenSet = InnerAntiforgery.GetTokens(new DefaultHttpContext());
-
-    public Cookie GetCsrfCookie() => new(_tokenSet.HeaderName, _tokenSet.CookieToken, "/foo", "localhost");
-
-    public KeyValuePair<string, string> GetCsrfFormValue() => new(_tokenSet.FormFieldName, _tokenSet.RequestToken);
-}
 
 public class MyIAntiforgery : IAntiforgery
 {
